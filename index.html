@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Hisab" />
+  <title>Hisab — Personal Finance</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Private • Local-first</p>
+        <h1>Hisab</h1>
+      </div>
+      <button id="installHelpBtn" class="ghost-btn">Install</button>
+    </header>
+
+    <div id="iosInstallCard" class="install-card hidden">
+      <div>
+        <strong>Install Hisab on iPhone</strong>
+        <p>Open this page in Safari → Share → Add to Home Screen → Add.</p>
+      </div>
+      <button id="dismissInstallCard" class="icon-btn" aria-label="Dismiss">×</button>
+    </div>
+
+    <main>
+      <section id="dashboardView" class="view active">
+        <div class="hero-card">
+          <span class="muted">Current cash & bank balance</span>
+          <strong id="currentBalance" class="hero-amount">PKR 0</strong>
+          <div class="hero-grid">
+            <div><span>Reserved Out</span><b id="reservedAmount">PKR 0</b></div>
+            <div><span>Expected In</span><b id="expectedIn">PKR 0</b></div>
+            <div><span>After Plan</span><b id="afterPlan">PKR 0</b></div>
+            <div><span>Tracked Liabilities</span><b id="netWorth">PKR 0</b></div>
+          </div>
+        </div>
+
+        <div class="quick-grid">
+          <button class="quick-btn" data-quick="expense"><span>−</span><small>Expense</small></button>
+          <button class="quick-btn" data-quick="income"><span>+</span><small>Income</small></button>
+          <button class="quick-btn" data-quick="plan"><span>▦</span><small>Plan</small></button>
+          <button class="quick-btn" data-go="more"><span>◫</span><small>Accounts</small></button>
+        </div>
+
+        <div class="section-head">
+          <div><h2 id="dashboardMonthTitle">This Month</h2><p id="planHealth" class="subtle"></p></div>
+          <button class="link-btn" data-go="plan">View plan</button>
+        </div>
+        <div id="upcomingList" class="stack"></div>
+
+        <div class="section-head"><h2>Goals</h2><button class="link-btn" data-go="goals">View all</button></div>
+        <div id="goalCards" class="stack"></div>
+      </section>
+
+      <section id="transactionsView" class="view">
+        <div class="section-head"><h2>Activity</h2><button id="addTxnBtn" class="primary-btn">+ Add</button></div>
+        <div class="filters-row">
+          <select id="txnFilter">
+            <option value="all">All activity</option>
+            <option value="income">Income</option>
+            <option value="expense">Expenses</option>
+            <option value="adjustment">Adjustments</option>
+          </select>
+          <button id="exportCsvBtn" class="ghost-btn">CSV</button>
+        </div>
+        <div id="transactionsList" class="stack"></div>
+      </section>
+
+      <section id="planView" class="view">
+        <div class="section-head"><h2>Monthly Plan</h2><button id="addPlanBtn" class="primary-btn">+ Add</button></div>
+        <div class="month-control">
+          <label>Budget month<input id="planMonth" type="month" /></label>
+          <button id="generateMonthBtn" class="ghost-btn">Generate Recurring</button>
+        </div>
+        <div class="plan-kpis">
+          <div class="mini-card"><span>Pending Out</span><b id="pendingOut">PKR 0</b></div>
+          <div class="mini-card"><span>Pending In</span><b id="pendingIn">PKR 0</b></div>
+        </div>
+        <div id="plansList" class="stack"></div>
+      </section>
+
+      <section id="goalsView" class="view">
+        <div class="section-head"><h2>Goals</h2><button id="addGoalBtn" class="primary-btn">+ Add</button></div>
+        <div id="goalsList" class="stack"></div>
+      </section>
+
+      <section id="moreView" class="view">
+        <div class="section-head"><h2>Accounts</h2><button id="addAccountBtn" class="primary-btn">+ Add</button></div>
+        <div id="accountsList" class="stack"></div>
+
+        <div class="section-head"><h2>Credit Cards</h2><button id="addCardBtn" class="primary-btn">+ Add</button></div>
+        <div id="cardsList" class="stack"></div>
+
+        <div class="section-head"><h2>Loans</h2><button id="addLoanBtn" class="primary-btn">+ Add</button></div>
+        <div id="loansList" class="stack"></div>
+
+        <div class="section-head"><h2>Committees</h2><button id="addCommitteeBtn" class="primary-btn">+ Add</button></div>
+        <div id="committeesList" class="stack"></div>
+
+        <div class="section-head"><h2>Investments</h2><button id="addInvestmentBtn" class="primary-btn">+ Add</button></div>
+        <div id="investmentsList" class="stack"></div>
+
+        <div class="section-head"><h2>Monthly Defaults</h2></div>
+        <form id="settingsForm" class="settings-card">
+          <label>Monthly Salary<input name="salary" inputmode="decimal" type="number" min="0" step="1" /></label>
+          <label>Sadqa %<input name="sadqaPercent" inputmode="decimal" type="number" min="0" step="0.1" /></label>
+          <button class="ghost-btn" type="submit">Save Defaults</button>
+        </form>
+
+        <div class="section-head"><h2>Recurring Rules</h2><button id="addRecurringBtn" class="primary-btn">+ Add</button></div>
+        <div id="recurringList" class="stack"></div>
+
+        <div class="section-head"><h2>Data & Privacy</h2></div>
+        <div class="menu-card">
+          <button id="backupBtn">Export Private Backup <span>›</span></button>
+          <label class="file-label">Restore / Import Backup <span>›</span><input id="restoreInput" type="file" accept="application/json,.json" /></label>
+          <button id="persistBtn">Protect Offline Storage <span>›</span></button>
+          <button id="resetBtn" class="danger-text">Reset App Data <span>›</span></button>
+        </div>
+
+        <div class="about-card">
+          <strong>Hisab v1.0</strong>
+          <p>No bank APIs, no account credentials, no subscription and no backend. Your finance data is stored on this device/browser only. Keep periodic private backups.</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-view="dashboard"><span>⌂</span>Home</button>
+      <button class="nav-item" data-view="transactions"><span>↕</span>Activity</button>
+      <button class="nav-item" data-view="plan"><span>▦</span>Plan</button>
+      <button class="nav-item" data-view="goals"><span>◎</span>Goals</button>
+      <button class="nav-item" data-view="more"><span>•••</span>More</button>
+    </nav>
+  </div>
+
+  <dialog id="onboardingDialog">
+    <form method="dialog" class="dialog-form onboarding-form">
+      <div class="brand-mark">H</div>
+      <h2>Welcome to Hisab</h2>
+      <p>Your data stays on this device. Start empty, or import your private starter/backup file after the app opens.</p>
+      <button id="startFreshBtn" type="button" class="primary-btn full">Start Hisab</button>
+    </form>
+  </dialog>
+
+  <dialog id="txnDialog">
+    <form id="txnForm" method="dialog" class="dialog-form">
+      <div class="dialog-head"><h3 id="txnDialogTitle">Add Transaction</h3><button type="button" class="icon-btn" data-close="txnDialog">×</button></div>
+      <input type="hidden" name="id" />
+      <label>Type<select name="type" required><option value="expense">Expense</option><option value="income">Income</option></select></label>
+      <label>Account<select name="accountId" required></select></label>
+      <label>Amount<input name="amount" inputmode="decimal" type="number" min="0.01" step="0.01" required /></label>
+      <label>Category<input name="category" placeholder="Fuel, Food, Salary..." required /></label>
+      <label>Note<input name="note" placeholder="Optional" /></label>
+      <label>Date<input name="date" type="date" required /></label>
+      <button class="primary-btn full" type="submit">Save Transaction</button>
+    </form>
+  </dialog>
+
+  <dialog id="planDialog">
+    <form id="planForm" method="dialog" class="dialog-form">
+      <div class="dialog-head"><h3 id="planDialogTitle">Add Planned Item</h3><button type="button" class="icon-btn" data-close="planDialog">×</button></div>
+      <input type="hidden" name="id" />
+      <label>Direction<select name="direction" required><option value="out">Money Out</option><option value="in">Money In</option></select></label>
+      <label>Title<input name="title" required /></label>
+      <label>Amount<input name="amount" inputmode="decimal" type="number" min="0.01" step="0.01" required /></label>
+      <label>Budget Month<input name="budgetMonth" type="month" required /></label>
+      <label>Due Date<input name="dueDate" type="date" /></label>
+      <label class="check-label"><input name="essential" type="checkbox" checked /> Treat as reserved/essential</label>
+      <label>Note<input name="note" placeholder="Optional" /></label>
+      <button class="primary-btn full" type="submit">Save Planned Item</button>
+    </form>
+  </dialog>
+
+  <dialog id="completePlanDialog">
+    <form id="completePlanForm" method="dialog" class="dialog-form">
+      <div class="dialog-head"><h3>Complete Planned Item</h3><button type="button" class="icon-btn" data-close="completePlanDialog">×</button></div>
+      <input type="hidden" name="planId" />
+      <div id="completePlanSummary" class="summary-box"></div>
+      <label>Account<select name="accountId" required></select></label>
+      <label>Actual Amount<input name="amount" inputmode="decimal" type="number" min="0.01" step="0.01" required /></label>
+      <label>Date<input name="date" type="date" required /></label>
+      <button class="primary-btn full" type="submit">Mark Completed</button>
+    </form>
+  </dialog>
+
+  <dialog id="goalDialog">
+    <form id="goalForm" method="dialog" class="dialog-form">
+      <div class="dialog-head"><h3 id="goalDialogTitle">Goal</h3><button type="button" class="icon-btn" data-close="goalDialog">×</button></div>
+      <input type="hidden" name="id" />
+      <label>Goal Name<input name="name" required /></label>
+      <label>Target Amount<input name="target" inputmode="decimal" type="number" min="1" step="1" required /></label>
+      <label>Saved So Far<input name="saved" inputmode="decimal" type="number" min="0" step="1" value="0" /></label>
+      <label>Target Date<input name="targetDate" type="date" /></label>
+      <label>Note<input name="note" /></label>
+      <button class="primary-btn full" type="submit">Save Goal</button>
+    </form>
+  </dialog>
+
+  <dialog id="accountDialog">
+    <form id="accountForm" method="dialog" class="dialog-form">
+      <div class="dialog-head"><h3 id="accountDialogTitle">Account</h3><button type="button" class="icon-btn" data-close="accountDialog">×</button></div>
+      <input type="hidden" name="id" />
+      <label>Name<input name="name" required /></label>
+      <label>Type<select name="type"><option value="bank">Bank</option><option value="cash">Cash</option><option value="wallet">Wallet</option></select></label>
+      <label>Current Balance<input name="balance" inputmode="decimal" type="number" step="0.01" required /></label>
+      <button class="primary-btn full" type="submit">Save Account</button>
+    </form>
+  </dialog>
+
+  <dialog id="cardDialog">
+    <form id="cardForm" method="dialog" class="dialog-form">
+      <div class="dialog-head"><h3>Credit Card</h3><button type="button" class="icon-btn" data-close="cardDialog">×</button></div>
+      <input type="hidden" name="id" />
+      <label>Name<input name="name" required /></label>
+      <label>Current / Estimated Bill<input name="currentBill" inputmode="decimal" type="number" min="0" step="1" value="0" /></label>
+      <label>Minimum Due<input name="minimumDue" inputmode="decimal" type="number" min="0" step="1" value="0" /></label>
+      <label>Monthly EMI<input name="emi" inputmode="decimal" type="number" min="0" step="1" value="0" /></label>
+      <label>Statement Day<input name="statementDay" type="number" min="1" max="31" /></label>
+      <label>Due Day<input name="dueDay" type="number" min="1" max="31" /></label>
+      <label>Note<input name="note" /></label>
+      <button class="primary-btn full" type="submit">Save Card</button>
+    </form>
+  </dialog>
+
+  <dialog id="committeeDialog">
+    <form id="committeeForm" method="dialog" class="dialog-form">
+      <div class="dialog-head"><h3>Committee</h3><button type="button" class="icon-btn" data-close="committeeDialog">×</button></div>
+      <input type="hidden" name="id" />
+      <label>Name<input name="name" required /></label>
+      <label>Monthly Contribution<input name="monthly" inputmode="decimal" type="number" min="0" step="1" required /></label>
+      <label>End / Expected Completion<input name="ends" placeholder="e.g. Feb 2027" /></label>
+      <label>Expected Payout<input name="payout" inputmode="decimal" type="number" min="0" step="1" value="0" /></label>
+      <label>Note<input name="note" /></label>
+      <button class="primary-btn full" type="submit">Save Committee</button>
+    </form>
+  </dialog>
+
+  <dialog id="investmentDialog">
+    <form id="investmentForm" method="dialog" class="dialog-form">
+      <div class="dialog-head"><h3>Investment</h3><button type="button" class="icon-btn" data-close="investmentDialog">×</button></div>
+      <input type="hidden" name="id" />
+      <label>Name<input name="name" required /></label>
+      <label>Current Value<input name="value" inputmode="decimal" type="number" min="0" step="1" required /></label>
+      <label>Category<input name="category" placeholder="Islamic money market, equity..." /></label>
+      <label class="check-label"><input name="shariah" type="checkbox" /> Marked Shariah-compliant by provider</label>
+      <label>Note<input name="note" /></label>
+      <button class="primary-btn full" type="submit">Save Investment</button>
+    </form>
+  </dialog>
+
+
+  <dialog id="loanDialog">
+    <form id="loanForm" method="dialog" class="dialog-form">
+      <div class="dialog-head"><h3>Loan / Debt</h3><button type="button" class="icon-btn" data-close="loanDialog">×</button></div>
+      <input type="hidden" name="id" />
+      <label>Name<input name="name" required /></label>
+      <label>Installment Amount<input name="installment" inputmode="decimal" type="number" min="0" step="1" required /></label>
+      <label>Remaining Installments<input name="remainingCount" type="number" min="0" step="1" required /></label>
+      <label>Next Due Date<input name="nextDue" type="date" /></label>
+      <label>Note<input name="note" /></label>
+      <button class="primary-btn full" type="submit">Save Loan</button>
+    </form>
+  </dialog>
+
+  <dialog id="recurringDialog">
+    <form id="recurringForm" method="dialog" class="dialog-form">
+      <div class="dialog-head"><h3>Recurring Rule</h3><button type="button" class="icon-btn" data-close="recurringDialog">×</button></div>
+      <input type="hidden" name="id" />
+      <label>Direction<select name="direction" required><option value="out">Money Out</option><option value="in">Money In</option></select></label>
+      <label>Title<input name="title" required /></label>
+      <label>Amount<input name="amount" inputmode="decimal" type="number" min="0" step="1" required /></label>
+      <label>Due Day<input name="dueDay" type="number" min="1" max="31" required /></label>
+      <label>Start Month<input name="startMonth" type="month" required /></label>
+      <label>End Month<input name="endMonth" type="month" /></label>
+      <label class="check-label"><input name="essential" type="checkbox" checked /> Treat as reserved/essential</label>
+      <label>Note<input name="note" /></label>
+      <button class="primary-btn full" type="submit">Save Rule</button>
+    </form>
+  </dialog>
+
+  <dialog id="installDialog">
+    <form method="dialog" class="dialog-form">
+      <div class="dialog-head"><h3>Install on iPhone</h3><button type="button" class="icon-btn" data-close="installDialog">×</button></div>
+      <ol class="install-steps">
+        <li>Open Hisab in <strong>Safari</strong>.</li>
+        <li>Tap the <strong>Share</strong> button.</li>
+        <li>Scroll and tap <strong>Add to Home Screen</strong>.</li>
+        <li>Tap <strong>Add</strong>.</li>
+      </ol>
+      <p class="subtle">After installation, open Hisab from the Home Screen and import your private starter/backup file.</p>
+      <button class="primary-btn full" value="default">Done</button>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
