@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'hisab_v1_state';
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.1.0';
 const $ = sel => document.querySelector(sel);
 const $$ = sel => [...document.querySelectorAll(sel)];
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`);
@@ -15,7 +15,7 @@ const prettyMonth = m => m ? new Date(`${m}-01T12:00:00`).toLocaleDateString('en
 function blankState(){
   return {
     meta:{version:APP_VERSION,createdAt:new Date().toISOString(),activeMonth:thisMonth(),onboarded:false},
-    settings:{currency:'PKR',salary:0,sadqaPercent:2.5},
+    settings:{currency:'PKR',salary:0,sadqaPercent:2.5,theme:'light'},
     accounts:[{id:'cash',name:'Cash',type:'cash',balance:0}],
     transactions:[],plans:[],goals:[],cards:[],loans:[],committees:[],investments:[],recurring:[],snapshots:[]
   };
@@ -54,6 +54,17 @@ function pendingPlans(month=state.meta.activeMonth){return plansFor(month).filte
 function pendingSum(direction,month=state.meta.activeMonth){return pendingPlans(month).filter(p=>p.direction===direction).reduce((s,p)=>s+number(p.amount),0)}
 function reservedOut(month=state.meta.activeMonth){return pendingPlans(month).filter(p=>p.direction==='out'&&p.essential).reduce((s,p)=>s+number(p.amount),0)}
 function afterPlan(month=state.meta.activeMonth){return totalBalance()+pendingSum('in',month)-pendingSum('out',month)}
+function safeToSpend(month=state.meta.activeMonth){return totalBalance()-reservedOut(month)}
+function transactionsForMonth(month=state.meta.activeMonth){return state.transactions.filter(t=>String(t.date||'').startsWith(month))}
+function monthTxnSum(type,month=state.meta.activeMonth){return transactionsForMonth(month).filter(t=>t.type===type).reduce((s,t)=>s+Math.abs(number(t.amount)),0)}
+function shiftMonth(month,delta){const [y,m]=month.split('-').map(Number);const d=new Date(y,m-1+delta,1,12);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}
+function applyTheme(){
+  const theme=state.settings.theme==='dark'?'dark':'light';
+  document.documentElement.dataset.theme=theme;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',theme==='dark'?'#101715':'#2F6B5F');
+  const use=$('#themeToggleBtn use');if(use)use.setAttribute('href',theme==='dark'?'#i-sun':'#i-moon');
+  $$('[data-theme-choice]').forEach(b=>b.classList.toggle('active',b.dataset.themeChoice===theme));
+}
 function accountById(id){return state.accounts.find(a=>a.id===id)}
 function planById(id){return state.plans.find(p=>p.id===id)}
 
@@ -106,19 +117,41 @@ function goalCard(g,actions=true){
 }
 
 function renderDashboard(){
-  $('#currentBalance').textContent=fmt(totalBalance());
-  $('#reservedAmount').textContent=fmt(reservedOut());
-  $('#expectedIn').textContent=fmt(pendingSum('in'));
-  const ap=afterPlan(); $('#afterPlan').textContent=fmt(ap); $('#afterPlan').classList.toggle('negative',ap<0); $('#afterPlan').classList.toggle('positive',ap>=0);
-  $('#netWorth').textContent=fmt(loanLiability()+cardLiability());
-  $('#dashboardMonthTitle').textContent=prettyMonth(state.meta.activeMonth);
-  const health=ap>=0?`Plan leaves ${fmt(ap)} after all planned items.`:`Plan has a funding gap of ${fmt(Math.abs(ap))}.`;
+  const month=state.meta.activeMonth;
+  const balance=totalBalance(), reserved=reservedOut(month), safe=safeToSpend(month), ap=afterPlan(month);
+  const income=monthTxnSum('income',month), expenses=monthTxnSum('expense',month);
+  const tx=transactionsForMonth(month);
+  const incomeCount=tx.filter(t=>t.type==='income').length, expenseCount=tx.filter(t=>t.type==='expense').length;
+
+  $('#currentBalance').textContent=fmt(balance);
+  $('#safeToSpend').textContent=fmt(safe);$('#safeToSpend').classList.toggle('negative',safe<0);
+  $('#reservedAmount').textContent=fmt(reserved);
+  $('#monthIncome').textContent=fmt(income);$('#monthExpenses').textContent=fmt(expenses);
+  $('#incomeCount').textContent=`${incomeCount} transaction${incomeCount===1?'':'s'}`;
+  $('#expenseCount').textContent=`${expenseCount} transaction${expenseCount===1?'':'s'}`;
+  const pendingCount=pendingPlans(month).filter(p=>p.direction==='out').length;
+  $('#pendingBillsCount').textContent=`${pendingCount} pending item${pendingCount===1?'':'s'}`;
+  $('#debtRemaining').textContent=fmt(loanLiability()+cardLiability());
+  $('#dashboardMonthTitle').textContent=prettyMonth(month);
+  $('#dashboardMonthPicker').value=month;
+  const health=ap>=0?`After all planned inflows and outflows: ${fmt(ap)}.`:`Plan funding gap: ${fmt(Math.abs(ap))}.`;
   $('#planHealth').textContent=health;
-  const upcoming=pendingPlans().sort((a,b)=>(a.dueDate||'9999').localeCompare(b.dueDate||'9999')).slice(0,6);
+
+  const max=Math.max(income,expenses,1);
+  $('#cashFlowSubtitle').textContent=`Actual activity in ${prettyMonth(month)}`;
+  $('#cashFlowChart').innerHTML=(income===0&&expenses===0)?'<div class="chart-empty" style="grid-column:1/-1">No income or expense transactions in this month yet.</div>':`
+    <div class="chart-column"><div class="bar-track"><div class="bar-fill income" style="height:${Math.max(4,(income/max)*100)}%"></div></div><div class="chart-label"><b>${fmt(income)}</b><span>Income</span></div></div>
+    <div class="chart-column"><div class="bar-track"><div class="bar-fill expense" style="height:${Math.max(4,(expenses/max)*100)}%"></div></div><div class="chart-label"><b>${fmt(expenses)}</b><span>Expenses</span></div></div>`;
+
+  const groups={};
+  tx.filter(t=>t.type==='expense').forEach(t=>{const k=(t.category||'Other').trim()||'Other';groups[k]=(groups[k]||0)+Math.abs(number(t.amount));});
+  const cats=Object.entries(groups).sort((a,b)=>b[1]-a[1]).slice(0,5), catMax=Math.max(...cats.map(x=>x[1]),1);
+  $('#categoryChart').innerHTML=cats.length?cats.map(([name,value])=>`<div class="category-row"><div class="category-name" title="${esc(name)}">${esc(name)}</div><div class="category-bar"><span style="width:${Math.max(5,(value/catMax)*100)}%"></span></div><div class="category-value">${fmt(value)}</div></div>`).join(''):'<div class="chart-empty">No expense categories to chart yet.</div>';
+
+  const upcoming=pendingPlans(month).sort((a,b)=>(a.dueDate||'9999').localeCompare(b.dueDate||'9999')).slice(0,6);
   $('#upcomingList').innerHTML=upcoming.length?upcoming.map(p=>planCard(p,false)).join(''):empty('No pending items in this month.');
   $('#goalCards').innerHTML=state.goals.length?state.goals.slice(0,2).map(g=>goalCard(g,false)).join(''):empty('No goals yet.');
 }
-
 function renderTransactions(){
   const filter=$('#txnFilter').value||'all';
   let tx=[...state.transactions].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.createdAt||'').localeCompare(a.createdAt||''));
@@ -147,9 +180,13 @@ function renderMore(){
   $('#recurringList').innerHTML=state.recurring.length?state.recurring.map(r=>`<article class="item-card"><div class="item-top"><div><div class="item-title">${esc(r.title)}</div><div class="item-sub">Day ${r.dueDay} • ${esc(r.startMonth||'')}${r.endMonth?` to ${esc(r.endMonth)}`:' onward'}${r.note?` • ${esc(r.note)}`:''}</div></div><div class="item-amount ${r.direction==='in'?'amount-in':'amount-out'}">${r.direction==='in'?'+':'−'}${fmt(r.amount)}</div></div><div class="item-actions"><button class="tiny-btn" data-recurring-edit="${r.id}">Edit</button><button class="tiny-btn danger" data-recurring-delete="${r.id}">Delete</button></div></article>`).join(''):empty('No recurring rules.');
   $('#settingsForm').elements.salary.value=state.settings.salary||0;
   $('#settingsForm').elements.sadqaPercent.value=state.settings.sadqaPercent??2.5;
+  $$('[data-theme-choice]').forEach(b=>b.classList.toggle('active',b.dataset.themeChoice===(state.settings.theme||'light')));
 }
 
 function render(){
+  applyTheme();
+  if($('#planMonth')&&document.activeElement!==$('#planMonth'))$('#planMonth').value=state.meta.activeMonth||thisMonth();
+  if($('#dashboardMonthPicker'))$('#dashboardMonthPicker').value=state.meta.activeMonth||thisMonth();
   renderDashboard();renderTransactions();renderPlan();renderGoals();renderMore();
   refreshAccountSelects();
 }
@@ -212,9 +249,17 @@ $$('[data-quick]').forEach(b=>b.addEventListener('click',()=>{const q=b.dataset.
 $('#addTxnBtn').onclick=()=>openTxn('expense');$('#addPlanBtn').onclick=()=>openPlan();$('#addGoalBtn').onclick=()=>openGoal();$('#addAccountBtn').onclick=()=>openAccount();$('#addCardBtn').onclick=()=>openCard();$('#addLoanBtn').onclick=()=>openLoan();$('#addCommitteeBtn').onclick=()=>openCommittee();$('#addInvestmentBtn').onclick=()=>openInvestment();$('#addRecurringBtn').onclick=()=>openRecurring();
 $('#installHelpBtn').onclick=()=>$('#installDialog').showModal();
 $('#dismissInstallCard').onclick=()=>$('#iosInstallCard').classList.add('hidden');
+$('#themeToggleBtn').onclick=()=>{state.settings.theme=state.settings.theme==='dark'?'light':'dark';save()};
+$$('[data-theme-choice]').forEach(b=>b.addEventListener('click',()=>{state.settings.theme=b.dataset.themeChoice==='dark'?'dark':'light';save()}));
+function setActiveMonth(month){if(!/^\d{4}-\d{2}$/.test(month))return;state.meta.activeMonth=month;save()}
+$('#prevMonthBtn').onclick=()=>setActiveMonth(shiftMonth(state.meta.activeMonth,-1));
+$('#nextMonthBtn').onclick=()=>setActiveMonth(shiftMonth(state.meta.activeMonth,1));
+$('#activeMonthBtn').onclick=()=>{const p=$('#dashboardMonthPicker');if(typeof p.showPicker==='function')p.showPicker();else p.click()};
+$('#dashboardMonthPicker').addEventListener('change',e=>setActiveMonth(e.target.value||state.meta.activeMonth));
+$('#reloadAppBtn').onclick=()=>location.reload();
 
 $('#txnFilter').addEventListener('change',renderTransactions);
-$('#planMonth').addEventListener('change',e=>{state.meta.activeMonth=e.target.value||state.meta.activeMonth;save()});
+$('#planMonth').addEventListener('change',e=>setActiveMonth(e.target.value||state.meta.activeMonth));
 $('#generateMonthBtn').onclick=()=>generateMonth($('#planMonth').value||state.meta.activeMonth);
 
 $('#txnForm').addEventListener('submit',e=>{
@@ -290,5 +335,15 @@ if(isIOS()&&!isStandalone())$('#iosInstallCard').classList.remove('hidden');
 if(!state.meta.onboarded)setTimeout(()=>$('#onboardingDialog').showModal(),150);
 $('#planMonth').value=state.meta.activeMonth||thisMonth();
 
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+if('serviceWorker' in navigator){
+  window.addEventListener('load',async()=>{
+    try{
+      const reg=await navigator.serviceWorker.register('./sw.js');
+      reg.update().catch(()=>{});
+      reg.addEventListener('updatefound',()=>{const w=reg.installing;if(!w)return;w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)$('#updateBanner').classList.remove('hidden')})});
+      navigator.serviceWorker.addEventListener('controllerchange',()=>{$('#updateBanner').classList.remove('hidden')},{once:true});
+    }catch{}
+  });
+}
+applyTheme();
 render();

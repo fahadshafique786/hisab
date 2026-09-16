@@ -1,144 +1,173 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#2F6B5F" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Hisab" />
+  <meta name="color-scheme" content="light dark" />
   <title>Hisab — Personal Finance</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <svg class="icon-sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5z"/><path d="M9 21v-7h6v7"/></symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24"><path d="M4 7h11"/><path d="m12 4 3 3-3 3"/><path d="M20 17H9"/><path d="m12 14-3 3 3 3"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7.5V6a2 2 0 0 1 2-2h12"/><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 12h5v4h-5a2 2 0 0 1 0-4z"/></symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 4v16"/><path d="m6 14 6 6 6-6"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 20V4"/><path d="m6 10 6-6 6 6"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M5 3h14v18l-3-2-4 2-4-2-3 2z"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+    <symbol id="i-credit-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></symbol>
+    <symbol id="i-landmark" viewBox="0 0 24 24"><path d="m3 10 9-6 9 6"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8M3 21h18M4 18h16"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-piggy" viewBox="0 0 24 24"><path d="M19 10c1.2 0 2 .8 2 2v2h-2c-.7 2-2.1 3.5-4 4v3h-3v-2H8v2H5v-4c-1.3-1-2-2.5-2-4 0-3.3 3.1-6 7-6h3c1.2 0 2.3.2 3.3.7L19 6v4z"/><circle cx="14.5" cy="10.5" r=".5"/><path d="M7 7 5 4c2 0 3.5.5 4.5 2"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M8 14v6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-banknote" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M7 9H6v1M17 15h1v-1"/></symbol>
+    <symbol id="i-repeat" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="m7 22-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  </svg>
+
   <div class="app-shell">
     <header class="topbar">
-      <div>
-        <p class="eyebrow">Private • Local-first</p>
-        <h1>Hisab</h1>
+      <div class="brand-lockup">
+        <div class="brand-logo">H</div>
+        <div><p class="eyebrow">Private • Local-first</p><h1>Hisab</h1></div>
       </div>
-      <button id="installHelpBtn" class="ghost-btn">Install</button>
+      <div class="top-actions">
+        <button id="themeToggleBtn" class="icon-btn top-icon" aria-label="Toggle theme"><svg class="icon"><use href="#i-moon"></use></svg></button>
+        <button id="installHelpBtn" class="ghost-btn install-help">Install</button>
+      </div>
     </header>
 
+    <div id="updateBanner" class="update-banner hidden">
+      <div><strong>Hisab update ready</strong><p>Reload once to use the latest version.</p></div>
+      <button id="reloadAppBtn" class="tiny-btn primary">Reload</button>
+    </div>
+
     <div id="iosInstallCard" class="install-card hidden">
-      <div>
-        <strong>Install Hisab on iPhone</strong>
-        <p>Open this page in Safari → Share → Add to Home Screen → Add.</p>
-      </div>
-      <button id="dismissInstallCard" class="icon-btn" aria-label="Dismiss">×</button>
+      <div><strong>Install Hisab on iPhone</strong><p>Safari → Share → Add to Home Screen.</p></div>
+      <button id="dismissInstallCard" class="icon-btn" aria-label="Dismiss"><svg class="icon"><use href="#i-x"></use></svg></button>
     </div>
 
     <main>
       <section id="dashboardView" class="view active">
+        <div class="month-switcher" aria-label="Active budget month">
+          <button id="prevMonthBtn" class="icon-btn" aria-label="Previous month"><svg class="icon"><use href="#i-chevron-left"></use></svg></button>
+          <button id="activeMonthBtn" class="month-title-btn"><span id="dashboardMonthTitle">This Month</span><small>Budget month</small></button>
+          <button id="nextMonthBtn" class="icon-btn" aria-label="Next month"><svg class="icon"><use href="#i-chevron-right"></use></svg></button>
+          <input id="dashboardMonthPicker" type="month" class="visually-hidden" tabindex="-1" aria-hidden="true" />
+        </div>
+
         <div class="hero-card">
-          <span class="muted">Current cash & bank balance</span>
+          <div class="hero-top"><span>Current cash & bank balance</span><svg class="icon hero-icon"><use href="#i-wallet"></use></svg></div>
           <strong id="currentBalance" class="hero-amount">PKR 0</strong>
-          <div class="hero-grid">
-            <div><span>Reserved Out</span><b id="reservedAmount">PKR 0</b></div>
-            <div><span>Expected In</span><b id="expectedIn">PKR 0</b></div>
-            <div><span>After Plan</span><b id="afterPlan">PKR 0</b></div>
-            <div><span>Tracked Liabilities</span><b id="netWorth">PKR 0</b></div>
-          </div>
+          <div class="safe-spend-row"><span>Safe to spend</span><b id="safeToSpend">PKR 0</b></div>
+          <div class="hero-plan-row"><span id="planHealth">Your plan is ready.</span><button class="hero-link" data-go="plan">View plan</button></div>
+        </div>
+
+        <div class="metric-grid">
+          <article class="metric-card"><div class="metric-icon positive-bg"><svg class="icon"><use href="#i-arrow-down"></use></svg></div><div><span>Income</span><b id="monthIncome">PKR 0</b><small id="incomeCount">0 transactions</small></div></article>
+          <article class="metric-card"><div class="metric-icon danger-bg"><svg class="icon"><use href="#i-arrow-up"></use></svg></div><div><span>Expenses</span><b id="monthExpenses">PKR 0</b><small id="expenseCount">0 transactions</small></div></article>
+          <article class="metric-card"><div class="metric-icon"><svg class="icon"><use href="#i-receipt"></use></svg></div><div><span>Reserved</span><b id="reservedAmount">PKR 0</b><small id="pendingBillsCount">0 pending items</small></div></article>
+          <article class="metric-card"><div class="metric-icon"><svg class="icon"><use href="#i-landmark"></use></svg></div><div><span>Debt tracked</span><b id="debtRemaining">PKR 0</b><small>Cards + loans</small></div></article>
         </div>
 
         <div class="quick-grid">
-          <button class="quick-btn" data-quick="expense"><span>−</span><small>Expense</small></button>
-          <button class="quick-btn" data-quick="income"><span>+</span><small>Income</small></button>
-          <button class="quick-btn" data-quick="plan"><span>▦</span><small>Plan</small></button>
-          <button class="quick-btn" data-go="more"><span>◫</span><small>Accounts</small></button>
+          <button class="quick-btn" data-quick="expense"><span class="quick-icon"><svg class="icon"><use href="#i-arrow-up"></use></svg></span><small>Expense</small></button>
+          <button class="quick-btn" data-quick="income"><span class="quick-icon"><svg class="icon"><use href="#i-arrow-down"></use></svg></span><small>Income</small></button>
+          <button class="quick-btn" data-quick="plan"><span class="quick-icon"><svg class="icon"><use href="#i-calendar"></use></svg></span><small>Plan</small></button>
+          <button class="quick-btn" data-go="more"><span class="quick-icon"><svg class="icon"><use href="#i-wallet"></use></svg></span><small>Accounts</small></button>
         </div>
 
-        <div class="section-head">
-          <div><h2 id="dashboardMonthTitle">This Month</h2><p id="planHealth" class="subtle"></p></div>
-          <button class="link-btn" data-go="plan">View plan</button>
+        <div class="dashboard-grid">
+          <section class="panel-card chart-panel">
+            <div class="panel-head"><div><h2>Cash flow</h2><p id="cashFlowSubtitle" class="subtle">Actual activity this month</p></div><svg class="icon panel-icon"><use href="#i-chart"></use></svg></div>
+            <div id="cashFlowChart" class="cashflow-chart" aria-label="Income and expense chart"></div>
+          </section>
+          <section class="panel-card chart-panel">
+            <div class="panel-head"><div><h2>Spending mix</h2><p class="subtle">Top expense categories</p></div><svg class="icon panel-icon"><use href="#i-receipt"></use></svg></div>
+            <div id="categoryChart" class="category-chart"></div>
+          </section>
         </div>
+
+        <div class="section-head"><div><h2>Upcoming</h2><p class="subtle">Pending items for this month</p></div><button class="link-btn" data-go="plan">View plan</button></div>
         <div id="upcomingList" class="stack"></div>
 
-        <div class="section-head"><h2>Goals</h2><button class="link-btn" data-go="goals">View all</button></div>
+        <div class="section-head"><div><h2>Goals</h2><p class="subtle">Keep the important targets visible</p></div><button class="link-btn" data-go="goals">View all</button></div>
         <div id="goalCards" class="stack"></div>
       </section>
 
       <section id="transactionsView" class="view">
-        <div class="section-head"><h2>Activity</h2><button id="addTxnBtn" class="primary-btn">+ Add</button></div>
-        <div class="filters-row">
-          <select id="txnFilter">
-            <option value="all">All activity</option>
-            <option value="income">Income</option>
-            <option value="expense">Expenses</option>
-            <option value="adjustment">Adjustments</option>
-          </select>
-          <button id="exportCsvBtn" class="ghost-btn">CSV</button>
-        </div>
+        <div class="page-title"><div><p class="eyebrow">Money movement</p><h2>Activity</h2></div><button id="addTxnBtn" class="primary-btn"><svg class="icon"><use href="#i-plus"></use></svg> Add</button></div>
+        <div class="filters-row"><select id="txnFilter"><option value="all">All activity</option><option value="income">Income</option><option value="expense">Expenses</option><option value="adjustment">Adjustments</option></select><button id="exportCsvBtn" class="ghost-btn">CSV</button></div>
         <div id="transactionsList" class="stack"></div>
       </section>
 
       <section id="planView" class="view">
-        <div class="section-head"><h2>Monthly Plan</h2><button id="addPlanBtn" class="primary-btn">+ Add</button></div>
-        <div class="month-control">
-          <label>Budget month<input id="planMonth" type="month" /></label>
-          <button id="generateMonthBtn" class="ghost-btn">Generate Recurring</button>
-        </div>
-        <div class="plan-kpis">
-          <div class="mini-card"><span>Pending Out</span><b id="pendingOut">PKR 0</b></div>
-          <div class="mini-card"><span>Pending In</span><b id="pendingIn">PKR 0</b></div>
-        </div>
+        <div class="page-title"><div><p class="eyebrow">Budget & obligations</p><h2>Monthly Plan</h2></div><button id="addPlanBtn" class="primary-btn"><svg class="icon"><use href="#i-plus"></use></svg> Add</button></div>
+        <div class="month-control"><label>Budget month<input id="planMonth" type="month" /></label><button id="generateMonthBtn" class="ghost-btn"><svg class="icon"><use href="#i-repeat"></use></svg> Generate recurring</button></div>
+        <div class="plan-kpis"><div class="mini-card"><span>Pending Out</span><b id="pendingOut">PKR 0</b></div><div class="mini-card"><span>Pending In</span><b id="pendingIn">PKR 0</b></div></div>
         <div id="plansList" class="stack"></div>
       </section>
 
       <section id="goalsView" class="view">
-        <div class="section-head"><h2>Goals</h2><button id="addGoalBtn" class="primary-btn">+ Add</button></div>
-        <div id="goalsList" class="stack"></div>
+        <div class="page-title"><div><p class="eyebrow">Savings targets</p><h2>Goals</h2></div><button id="addGoalBtn" class="primary-btn"><svg class="icon"><use href="#i-plus"></use></svg> Add</button></div>
+        <div id="goalsList" class="goal-grid"></div>
       </section>
 
       <section id="moreView" class="view">
-        <div class="section-head"><h2>Accounts</h2><button id="addAccountBtn" class="primary-btn">+ Add</button></div>
-        <div id="accountsList" class="stack"></div>
+        <div class="page-title"><div><p class="eyebrow">Manage Hisab</p><h2>Accounts & Settings</h2></div></div>
 
-        <div class="section-head"><h2>Credit Cards</h2><button id="addCardBtn" class="primary-btn">+ Add</button></div>
-        <div id="cardsList" class="stack"></div>
+        <div class="section-head"><h2>Appearance</h2></div>
+        <div class="theme-card"><div><div class="item-title">Theme</div><div class="item-sub">Light is the default. Dark mode stays optional.</div></div><div class="segmented" role="group" aria-label="Theme"><button type="button" data-theme-choice="light"><svg class="icon"><use href="#i-sun"></use></svg>Light</button><button type="button" data-theme-choice="dark"><svg class="icon"><use href="#i-moon"></use></svg>Dark</button></div></div>
 
-        <div class="section-head"><h2>Loans</h2><button id="addLoanBtn" class="primary-btn">+ Add</button></div>
-        <div id="loansList" class="stack"></div>
-
-        <div class="section-head"><h2>Committees</h2><button id="addCommitteeBtn" class="primary-btn">+ Add</button></div>
-        <div id="committeesList" class="stack"></div>
-
-        <div class="section-head"><h2>Investments</h2><button id="addInvestmentBtn" class="primary-btn">+ Add</button></div>
-        <div id="investmentsList" class="stack"></div>
+        <div class="section-head"><h2>Accounts</h2><button id="addAccountBtn" class="primary-btn"><svg class="icon"><use href="#i-plus"></use></svg> Add</button></div><div id="accountsList" class="stack"></div>
+        <div class="section-head"><h2>Credit Cards</h2><button id="addCardBtn" class="primary-btn"><svg class="icon"><use href="#i-plus"></use></svg> Add</button></div><div id="cardsList" class="stack"></div>
+        <div class="section-head"><h2>Loans</h2><button id="addLoanBtn" class="primary-btn"><svg class="icon"><use href="#i-plus"></use></svg> Add</button></div><div id="loansList" class="stack"></div>
+        <div class="section-head"><h2>Committees</h2><button id="addCommitteeBtn" class="primary-btn"><svg class="icon"><use href="#i-plus"></use></svg> Add</button></div><div id="committeesList" class="stack"></div>
+        <div class="section-head"><h2>Investments</h2><button id="addInvestmentBtn" class="primary-btn"><svg class="icon"><use href="#i-plus"></use></svg> Add</button></div><div id="investmentsList" class="stack"></div>
 
         <div class="section-head"><h2>Monthly Defaults</h2></div>
-        <form id="settingsForm" class="settings-card">
-          <label>Monthly Salary<input name="salary" inputmode="decimal" type="number" min="0" step="1" /></label>
-          <label>Sadqa %<input name="sadqaPercent" inputmode="decimal" type="number" min="0" step="0.1" /></label>
-          <button class="ghost-btn" type="submit">Save Defaults</button>
-        </form>
+        <form id="settingsForm" class="settings-card"><label>Monthly Salary<input name="salary" inputmode="decimal" type="number" min="0" step="1" /></label><label>Sadqa %<input name="sadqaPercent" inputmode="decimal" type="number" min="0" step="0.1" /></label><button class="ghost-btn" type="submit">Save Defaults</button></form>
 
-        <div class="section-head"><h2>Recurring Rules</h2><button id="addRecurringBtn" class="primary-btn">+ Add</button></div>
-        <div id="recurringList" class="stack"></div>
+        <div class="section-head"><h2>Recurring Rules</h2><button id="addRecurringBtn" class="primary-btn"><svg class="icon"><use href="#i-plus"></use></svg> Add</button></div><div id="recurringList" class="stack"></div>
 
         <div class="section-head"><h2>Data & Privacy</h2></div>
         <div class="menu-card">
-          <button id="backupBtn">Export Private Backup <span>›</span></button>
-          <label class="file-label">Restore / Import Backup <span>›</span><input id="restoreInput" type="file" accept="application/json,.json" /></label>
-          <button id="persistBtn">Protect Offline Storage <span>›</span></button>
-          <button id="resetBtn" class="danger-text">Reset App Data <span>›</span></button>
+          <button id="backupBtn"><span class="menu-row-label"><svg class="icon"><use href="#i-download"></use></svg>Export Private Backup</span><span>›</span></button>
+          <label class="file-label"><span class="menu-row-label"><svg class="icon"><use href="#i-upload"></use></svg>Restore / Import Backup</span><span>›</span><input id="restoreInput" type="file" accept="application/json,.json" /></label>
+          <button id="persistBtn"><span class="menu-row-label"><svg class="icon"><use href="#i-shield"></use></svg>Protect Offline Storage</span><span>›</span></button>
+          <button id="resetBtn" class="danger-text"><span class="menu-row-label"><svg class="icon"><use href="#i-database"></use></svg>Reset App Data</span><span>›</span></button>
         </div>
 
-        <div class="about-card">
-          <strong>Hisab v1.0</strong>
-          <p>No bank APIs, no account credentials, no subscription and no backend. Your finance data is stored on this device/browser only. Keep periodic private backups.</p>
-        </div>
+        <div class="about-card"><div class="about-brand"><div class="brand-logo small">H</div><div><strong>Hisab v1.1</strong><p>White + Calm Teal • local-first • no bank APIs • no subscription.</p></div></div><p>Your finance data stays in this device/browser. Keep periodic private backups.</p></div>
       </section>
     </main>
 
     <nav class="bottom-nav">
-      <button class="nav-item active" data-view="dashboard"><span>⌂</span>Home</button>
-      <button class="nav-item" data-view="transactions"><span>↕</span>Activity</button>
-      <button class="nav-item" data-view="plan"><span>▦</span>Plan</button>
-      <button class="nav-item" data-view="goals"><span>◎</span>Goals</button>
-      <button class="nav-item" data-view="more"><span>•••</span>More</button>
+      <button class="nav-item active" data-view="dashboard"><svg class="icon"><use href="#i-home"></use></svg><span>Home</span></button>
+      <button class="nav-item" data-view="transactions"><svg class="icon"><use href="#i-activity"></use></svg><span>Activity</span></button>
+      <button class="nav-item" data-view="plan"><svg class="icon"><use href="#i-calendar"></use></svg><span>Plan</span></button>
+      <button class="nav-item" data-view="goals"><svg class="icon"><use href="#i-target"></use></svg><span>Goals</span></button>
+      <button class="nav-item" data-view="more"><svg class="icon"><use href="#i-more"></use></svg><span>More</span></button>
     </nav>
   </div>
 
